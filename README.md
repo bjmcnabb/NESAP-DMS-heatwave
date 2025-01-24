@@ -2,8 +2,8 @@
 Scripts providing post-processing and analysis of DMS/O/P cycling & concentrations, and other ancillary data, collected along Line P during a marine heatwave in August 2022.
 
 The main scripts used are the following:
-- <ins>DMS_heatwave_analysis.py</ins>: loads relevant datasets and runs data analysis, including model runs and statistics.
-- <ins>DMS_heatwave_figures.py</ins>: produces main figure 1-4 and extended data figures 1-6.
+- <ins>DMS_heatwave_analysis.py</ins>: loads the relevant datasets and runs data analysis, including model runs and statistics.
+- <ins>DMS_heatwave_figures.py</ins>: produces main figures 1-4 and extended data figures 1-6.
 
 Other required code are provided in the following scripts:
 - <ins>extract_profile_data_1956_1990.py</ins>: script provides an iterative function to read historic 1956-1990 profile T-S data (.bot and .ctd files, provided by the Institute of Ocean Sciences at https://wwww.waterproperties.com). Note this function is not comprehensive in extracting metadata; it only extracts neccesary data.
