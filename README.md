@@ -8,7 +8,7 @@ The main scripts used are the following:
 Other required code are provided in the following scripts:
 - <ins>process_uw_DMS_2022.py</ins>: script to extract underway DMS and DMSP concentrations from integrated CIMS peaks. 
 - <ins>turnover_rates.py</ins>: provides a wrapper function that iteratively runs linear regression on time-course, isotopically-labelled DMS/O/P concentrations obtained from the incubations described in text.
-- <ins>NESAP_build_models.py</ins>: streamlined code reproduced from https://github.com/bjmcnabb/DMS_Climatology/tree/main/NESAP, which builds the RFR and ANN models as described in McNabb & Tortell (2022).
+- <ins>NESAP_build_models.py</ins>: streamlined code reproduced from https://github.com/bjmcnabb/DMS_Climatology/tree/main/NESAP, which builds the RFR and ANN models as described in [McNabb & Tortell (2022)]([https://pages.github.com/](https://bg.copernicus.org/articles/19/1705/2022/)).
 - <ins>FRRF_data_extraction.py</ins>: provides an iterative function to extract user-selected physiological parameters obtained from the curve-fitting outputs of the LIFT software.
 - <ins>extract_profile_data_1956_1990.py</ins>: provides an iterative function to read historic 1956-1990 profile T-S data (.bot and .ctd files, provided by the Institute of Ocean Sciences at https://wwww.waterproperties.com). Note this function is not comprehensive in extracting metadata; it only extracts neccesary data.
 - <ins>extract_profile_data_2007_2022.py</ins>: function to read modern (2007-2022) CTD and water property data (provided by the Institute of Ocean Sciences at https://wwww.waterproperties.com).
