@@ -13,7 +13,7 @@ Other required code are provided in the following scripts:
 - <ins>FRRF_data_extraction.py</ins>: provides an iterative function to extract user-selected physiological parameters obtained from the curve-fitting outputs of the LIFT software.
 - <ins>process_uw_DMS_2022.py</ins>: script to extract underway DMS and DMSP concentrations from integrated CIMS peaks. 
 - <ins>turnover_rates.py</ins>: provides a wrapper function that iteratively runs linear regression on time-course, isotopically-labelled DMS/O/P concentrations obtained from the incubations described in text.
-- <ins>VGPM_NPP_toolbox.py</ins>: provides two helper functions "LatToDayLength" and "calculate_NPP" which are Python ports of the code provided with the VGPM product webpage (http://orca.science.oregonstate.edu/vgpm.code.php).
+- <ins>VGPM_NPP_toolbox.py</ins>: provides two helper functions "LatToDayLength" and "calculate_NPP", which are Python ports of the code written and provided by the VGPM product maintainers (see http://orca.science.oregonstate.edu/vgpm.code.php).
 
 
 
