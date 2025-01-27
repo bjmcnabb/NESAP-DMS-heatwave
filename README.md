@@ -14,6 +14,7 @@ Other required code are provided in the following scripts:
 - <ins>extract_profile_data_2007_2022.py</ins>: function to read modern (2007-2022) CTD and water property data (provided by the Institute of Ocean Sciences at https://wwww.waterproperties.com).
 - <ins>MHW_get_clim_stats.py</ins>: iterative script to load, currate and get descriptive statistics (mean, SD) from historical SST data, which are used to compute the temperature baseline for calculating SST anomalies in Fig. 2a.
 - <ins>VGPM_NPP_toolbox.py</ins>: provides two helper functions "LatToDayLength" and "calculate_NPP", which are Python ports of the code written and provided by the VGPM product maintainers (see http://orca.science.oregonstate.edu/vgpm.code.php) that are used to calculate NPP from satellite data.
+- <ins>bin1d.py</ins>: function that takes either 1-D or 2-D data and bins it along the column axis. Dependencies include numpy and pandas.
 
 
 
