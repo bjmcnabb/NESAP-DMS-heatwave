@@ -6,8 +6,7 @@ The main scripts used are the following:
 | ------------- | ------------- |
 | DMS_heatwave_analysis.py | loads the relevant datasets and runs data analysis, including model runs and statistics. |
 | DMS_heatwave_figures.py | produces main figures 1-4 and extended data figures 1-6. |
- 
- 
+ &nbsp;
 Other required code are provided in the following scripts:
 | Script  | Description |
 | ------------- | ------------- |
