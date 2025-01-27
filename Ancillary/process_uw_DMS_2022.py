@@ -224,6 +224,15 @@ uw = pd.concat([uw, coords], axis=1)
 uw.lon.fillna(uw.bridge_lon, inplace=True)
 uw.lat.fillna(uw.bridge_lat, inplace=True)
 
+# Manually asign sample IDs where above algorithm failed
+uw.loc[21,'sample'] = 2
+uw.loc[23,'sample'] = 2
+uw.loc[74:88, 'sample'] = [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0]
+uw.loc[120,'sample'] = 0
+uw.loc[195,'sample'] = 0
+uw.loc[242,'sample'] = 0
+uw.loc[263:264,'sample'] = 0
+
 # extract variables
 uw_DMS = uw[uw['sample']==0]
 uw_DMSP = uw[uw['sample']==2]
@@ -241,22 +250,33 @@ uw_DMS.reset_index(inplace=True)
 uw_DMSP.reset_index(inplace=True)
 S_ratio.reset_index(inplace=True)
 
-# Correct for some erroneous points
-uw_DMS = uw_DMS.where(uw_DMS['conc']<80,np.nan)
-uw_DMS = uw_DMS.where(uw_DMS['conc']>0, np.nan)
-uw_DMS.loc[114,'conc'] = np.nan
+# Correct for some erroneous points 
 
-# rinsing failure:
+# remove values below detection limit
+uw_DMS = uw_DMS.where(uw_DMS['conc']>0, np.nan) 
+# pressure spike - discard point sample
+uw_DMS.loc[15,'conc'] = np.nan # pressure spike - discard point sample
+uw_DMS.loc[114,'conc'] = np.nan # pressure spike - discard point sample
+# rinsing failure - samples were too high:
 uw_DMS = uw_DMS.mask(uw_DMS.loc[:,'time']<pd.Timestamp('2022-08-11 15:10:00.0'))
-# precipitate build-up
+uw_DMSP = uw_DMSP.mask(uw_DMSP.loc[:,'time']<pd.Timestamp('2022-08-11 15:10:00.0'))
+# precipitate build-up - contamination of DMSP in DMS samples, remove:
 uw_DMS = uw_DMS.mask((uw_DMS.loc[:,'time']>=pd.Timestamp('2022-08-13 11:56:48.082501')) & (uw_DMS.loc[:,'time']<=pd.Timestamp('2022-08-13 13:08:33.023128')))
-# failed discrete sample
+uw_DMSP = uw_DMSP.mask((uw_DMSP.loc[:,'time']>=pd.Timestamp('2022-08-13 11:56:48.082501')) & (uw_DMSP.loc[:,'time']<=pd.Timestamp('2022-08-13 13:08:33.023128')))
+# switching from discrete to underway plumbing failed: 
 uw_DMS = uw_DMS.mask((uw_DMS.loc[:,'time']>=pd.Timestamp('2022-08-14 20:53:00')) & (uw_DMS.loc[:,'time']<=pd.Timestamp('2022-08-14 21:14:00')))
-# heat test failed
+uw_DMSP = uw_DMSP.mask((uw_DMSP.loc[:,'time']>=pd.Timestamp('2022-08-14 20:53:00')) & (uw_DMSP.loc[:,'time']<=pd.Timestamp('2022-08-14 21:14:00')))
+# heat test failed - samples did not elute properly:
 uw_DMS = uw_DMS.mask((uw_DMS.loc[:,'time']>=pd.Timestamp('2022-08-16 17:00:00')) & (uw_DMS.loc[:,'time']<=pd.Timestamp('2022-08-16 19:00:00')))
+uw_DMSP = uw_DMSP.mask((uw_DMSP.loc[:,'time']>=pd.Timestamp('2022-08-16 17:00:00')) & (uw_DMSP.loc[:,'time']<=pd.Timestamp('2022-08-16 19:00:00')))
 
+# adjust timezones
 uw_DMS.loc[:,'time'] = uw_DMS.loc[:,'time'].dt.tz_localize('US/Pacific')
 uw_DMS.loc[:,'time'] = uw_DMS.loc[:,'time'].dt.tz_convert('US/Pacific')
 uw_DMS.loc[:,'time'] = uw_DMS.loc[:,'time'].dt.tz_localize(None)
+
+uw_DMSP.loc[:,'time'] = uw_DMSP.loc[:,'time'].dt.tz_localize('US/Pacific')
+uw_DMSP.loc[:,'time'] = uw_DMSP.loc[:,'time'].dt.tz_convert('US/Pacific')
+uw_DMSP.loc[:,'time'] = uw_DMSP.loc[:,'time'].dt.tz_localize(None)
 
 #------------------------------------------------------------------------------

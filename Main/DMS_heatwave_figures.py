@@ -179,8 +179,8 @@ axins = inset_axes(ax, width="40%", height="40%", loc="upper center",
                 axes_kwargs=dict(projection=ccrs.PlateCarree())
                 )
 
-axins.scatter(uw_DMS.iloc[:210,:].loc[:,'lon'],
-              uw_DMS.iloc[:210,:].loc[:,'lat'],
+axins.scatter(uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lon'],
+              uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lat'],
               s=10,
               c='k',
               transform=ccrs.PlateCarree())
@@ -869,7 +869,7 @@ fig.savefig(fig_dir+'Fig_4.tif', bbox_inches='tight', pil_kwargs={"compression":
 
 #%% FIG 4: Plot along transect wind speed & MLD
 
-P26_wind_ind= 199
+# P26_wind_ind= 207
 
 # wind_min_bound = DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['wind'][DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['wind']>6].index.get_level_values('lonbins').min()
 # wind_max_bound = DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['wind'][DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['wind']>6].index.get_level_values('lonbins').max()
@@ -889,6 +889,8 @@ panel_lettering = 18
 window = 6
 wind_smooth = np.convolve(DMS_wind_ship_anom.loc[:,'wind'], np.ones(window)/window, mode='valid')
 wind_smooth_lons = np.convolve(DMS_wind_ship_anom.index.get_level_values('lons').values, np.ones(window)/window, mode='valid')
+# get the index for P26
+P26_wind_ind = wind_smooth_lons.argmin()
 
 ax.plot(wind_smooth_lons[:P26_wind_ind-window],
         wind_smooth[:P26_wind_ind-window],

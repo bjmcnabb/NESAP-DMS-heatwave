@@ -1295,6 +1295,8 @@ FvFm_sd = FvFm_sd.reset_index().set_index(['station','lon','lat'])
 
 #%% Statistics
 
+DMS_OSP_loc = uw_DMS[uw_DMS['time'] == pd.Timestamp('2022-08-19 02:04:58.767940')].index[0]
+
 stations = [
     'P1',
     'P2',
@@ -1336,27 +1338,26 @@ scipy.stats.levene(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS
                    MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS'])
 
 # equal varainces assumption failed, use non-parameteric t-test
-scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS'],
-                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS'])
+print('U-test DMS =', scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS'],
+                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS']))
 
-scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS:chl'],
-                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS:chl'])
+print('U-test DMS:chl =', scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS:chl'],
+                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS:chl']))
 
 #------------------------------------------------------------------------------
 #### Compute correlations between DMS and MLD anomalies
 
 # get values matching up with DMS data (practically excludes some early line stations in haro strait)
+# index [1:] below excludes station P1, where there was a faulty DMS measurement
 MLD_anom_inds = []
-# DMS_MLD_vals = []
-for i,j in zip(MLD_anom.loc[stations].index.get_level_values('lon'), MLD_anom.loc[stations].index.get_level_values('lat')):
+for i,j in zip(MLD_anom.loc[stations[1:]].index.get_level_values('lon'), MLD_anom.loc[stations[1:]].index.get_level_values('lat')):
     if ~np.isnan(i) and ~np.isnan(j):
-        ind = np.nanargmin((np.abs(uw_DMS.iloc[:210,:].loc[:,'lat'] - j)+np.abs(uw_DMS.iloc[:210,:].loc[:,'lon'] - i)))
+        ind = np.nanargmin((np.abs(uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lat'] - j)+np.abs(uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lon'] - i)))
         MLD_anom_inds.append(ind)
-        # DMS_MLD_vals.append(np.nanmean(uw_DMS.loc[ind-3:ind+3, 'conc']))
 
 # compute correlations
-print('\nMLD ~ DMS; r =', pearsonr(MLD_anom.loc[stations], uw_DMS.loc[MLD_anom_inds, 'conc']))
-print('MLD ~ DMS; rho =', spearmanr(MLD_anom.loc[stations], uw_DMS.loc[MLD_anom_inds, 'conc']))
+print('\nMLD ~ DMS; r =', pearsonr(MLD_anom.loc[stations[1:]], uw_DMS.loc[MLD_anom_inds, 'conc']))
+print('MLD ~ DMS; rho =', spearmanr(MLD_anom.loc[stations[1:]], uw_DMS.loc[MLD_anom_inds, 'conc']))
 
 #------------------------------------------------------------------------------
 #### Compute correlation between SST and SSN anomalies
@@ -1374,7 +1375,7 @@ print('\nSSTA ~ haptos; r =', pearsonr(temp_depth_anom.loc[0:10].groupby('lon').
 #%% Calculate analysis run time
 analysis_end = timeit.default_timer()
 analysis_runtime = analysis_end-analysis_start
-print('Analysis Runtime:')
+print('\nAnalysis Runtime:')
 print(str(round(analysis_runtime,5)),'secs')
 print(str(round((analysis_runtime)/60,5)),'mins')
 print(str(round((analysis_runtime)/3600,5)),'hrs')
