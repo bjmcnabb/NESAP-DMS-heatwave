@@ -9,7 +9,7 @@ The main scripts used are the following:
 
 <br />
 
-Other required code are provided in the following scripts:
+Code abstracting analysis steps, or providing functions used in the main scripts, are provided in the following:
 | Script  | Description |
 | ------------- | ------------- |
 | process_uw_DMS_2022.py  | script used to extract underway DMS and DMSP concentrations from integrated CIMS peaks. |
