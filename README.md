@@ -8,7 +8,6 @@ The main scripts used are the following:
 | DMS_heatwave_figures.py | produces main figures 1-4 and extended data figures 1-6. |
 
 <br />
-&nbsp;
 
 Other required code are provided in the following scripts:
 | Script  | Description |
