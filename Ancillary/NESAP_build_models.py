@@ -9,50 +9,19 @@ Created on Wed Nov 25 15:15:19 2020
 import timeit
 analysis_start = timeit.default_timer()
 #%% Import Packages
-# import matplotlib as mpl
-# import matplotlib.pyplot as plt
-# from matplotlib.ticker import PercentFormatter
-# from mpl_toolkits.axes_grid1.inset_locator import InsetPosition, inset_axes
-# from matplotlib.lines import Line2D
+
 import pandas as pd
 import numpy as np
 import scipy
 from scipy.stats import pearsonr#, spearmanr
-# import cartopy
-# import cartopy.crs as ccrs
-# from mpl_toolkits.axes_grid1 import make_axes_locatable
-# from mpl_toolkits.mplot3d import Axes3D
-# from sklearn.decomposition import PCA
 import os
-# import sklearn
-# from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
-# from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import train_test_split#, GridSearchCV, ShuffleSplit
-# from sklearn.pipeline import Pipeline
-# from sklearn.inspection import permutation_importance
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from sklearn import metrics
-# from datetime import datetime
-# from sklearn import tree
-# from sklearn import linear_model
-# import datetime
-# import seaborn as sns
-# import dask.array as da
-# import dask.dataframe as dd
-# from joblib import parallel_backend
-# import cartopy.io.shapereader as shpreader
-# import shapely.geometry as sgeom
-# from shapely.ops import unary_union
-# from shapely.prepared import prep
 import joblib
-# from joblib import Parallel, delayed 
-
 from tqdm import tqdm
-
-# import seawater as sw
-# import gsw
 
 # Custom taylor diagram script
 from taylorDiagram import TaylorDiagram

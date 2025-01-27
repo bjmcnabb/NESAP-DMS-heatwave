@@ -4,30 +4,19 @@ Created on Wed Jan 22 08:45:51 2025
 
 @author: Brandon McNabb
 """
-
+#%% Start timer
+import timeit
+analysis_start = timeit.default_timer()
 #%% Import packages
 
 import matplotlib.pyplot as plt
-# import matplotlib as mpl
 import numpy as np
 import pandas as pd
-# from sklearn import linear_model
-# import statsmodels.api as sm
-# from statsmodels.nonparametric.smoothers_lowess import lowess
-# import lvm_read
-# import datetime
 from tqdm import tqdm
 import os
-# import cartopy
-# import cartopy.crs as ccrs
-# from mpl_toolkits.axes_grid1.inset_locator import InsetPosition, inset_axes
-# from mpl_toolkits.axes_grid1 import make_axes_locatable
-# import cmocean
 import xarray as xr
-from pyhdf.SD import SD, SDC
 import scipy
-# from scipy.stats import pearsonr, spearmanr
-# from obspy.geodetics import kilometers2degrees, degrees2kilometers
+from scipy.stats import pearsonr, spearmanr
 import gsw
 
 # load custom functions
@@ -558,40 +547,6 @@ for file in tqdm(files):
     linep_ctd = extract_profile(directory=linep_his_nitrate_dir_+os.sep+file,
                                 data_names=['Nitrate_plus_Nitrite:Bottle [µmol/l]',])
     
-    # CTD = pd.read_csv(linep_his_nitrate_dir_+os.sep+file, header=None, encoding = "ISO-8859-1", low_memory=False)
-    # # find locs of hypen seperated comments
-    # locs = []
-    # i = 0
-    # for j in CTD.iloc[:,0]:
-    #     if isinstance(j,str):
-    #         if j[0] == '-':
-    #             locs.append(i)
-    #     i+=1
-    # # drop comment header
-    # CTD = CTD.iloc[locs[-1]+1:,:]
-    # CTD = CTD.dropna(subset=0).reset_index().drop('index', axis=1)
-    # # relabel columns
-    # CTD.columns = CTD.iloc[0].values
-    # CTD = CTD.iloc[1:,:]
-    # CTD = CTD.reset_index().drop('index', axis=1)
-    # # drop gaps between data
-    # CTD = CTD.dropna(subset='Zone')
-    # # cast data as floats
-    # for col in CTD.columns[4:]:
-    #     if col != 'LOC:STATION' and col != 'Comments' and col != 'Comments by sample_number' and col != 'INS:LOCATION':
-    #         CTD[col] = CTD[col].astype('float64')
-    # # replace missing data with nans
-    # CTD = CTD.replace(-99,np.nan, regex=True)
-    
-    # linep_ctd = CTD.loc[:,['LOC:LATITUDE',
-    #                        'LOC:LONGITUDE',
-    #                        'LOC:STATION',
-    #                        'Pressure:CTD [dbar]',
-    #                        'Nitrate_plus_Nitrite:Bottle [µmol/l]',
-    #                        ]]
-    
-    # linep_ctd = linep_ctd.set_index(['LOC:LATITUDE', 'LOC:LONGITUDE', 'Pressure:CTD [dbar]', 'LOC:STATION'])
-    
     SSN = linep_ctd.loc[:,'Nitrate_plus_Nitrite:Bottle [µmol/l]'].where(linep_ctd.index.get_level_values('Pressure:CTD [dbar]')<=10, np.nan).dropna()
     SSN = SSN.reset_index().drop('level_0', axis=1)
     SSN = SSN.rename({'LOC:LATITUDE':'lat', 'LOC:LONGITUDE':'lon', 'LOC:STATION':'station', 'Nitrate_plus_Nitrite:Bottle [µmol/l]':'SSN'}, axis=1)
@@ -680,6 +635,11 @@ for file in tqdm(files):
         MLDs = MLDs.reset_index().drop('sigma-t', axis=1)
         MLDs = MLDs.set_index(['station', 'lon', 'lat'])
         
+        # convert the pressure values to depth (m) values
+        MLDs = pd.DataFrame(abs(gsw.z_from_p(p=MLDs.values.flatten(),
+                                             lat=MLDs.index.get_level_values('lat').values)),
+                            index=MLDs.index)
+        
         MLDs_his[file.split('-')[0]] = MLDs
 
 MLDs_his = pd.concat(MLDs_his)
@@ -752,6 +712,13 @@ MLDs = MLDs.sort_index(level='lon')
 MLDs = MLDs.reset_index().drop('sigma-t', axis=1)
 MLDs = MLDs.set_index(['station', 'lon', 'lat'])
 
+# convert the pressure values to depth (m) values
+MLDs = pd.DataFrame(abs(gsw.z_from_p(p=MLDs.values.flatten(),
+                                     lat=MLDs.index.get_level_values('lat').values)),
+                    index=MLDs.index)
+
+# calculate the MLD anomaly along Line P
+MLD_anom = pd.Series(MLDs.loc[stations].values.flatten()-MLD_mean.mean().loc[stations].values, index=MLDs.loc[stations].index)
 #------------------------------------------------------------------------------
 #### Find salinity
 
@@ -776,6 +743,8 @@ SSN = SSN.groupby('station').mean().drop('Pressure:CTD [dbar]', axis=1)
 SSN = SSN.sort_values('lon')
 SSN = SSN.reset_index().set_index(['station','lon','lat'])
 
+# calculate the SSN anomaly along Line P
+SSN_anom = pd.Series(SSN.loc[stations].values.flatten()-SSN_mean.mean().loc[stations].values, index=SSN.loc[stations].index)
 #------------------------------------------------------------------------------
 
 #%% Extract and compute T/S depth anomalies (1956-1990)
@@ -895,68 +864,6 @@ N_sq.loc[:,'depth'] = abs(
         )
 N_sq = N_sq.set_index(['LOC:LATITUDE', 'LOC:LONGITUDE', 'Pressure:CTD [dbar]', 'depth', 'LOC:STATION'])
 N_sq = N_sq.squeeze().groupby(['LOC:LATITUDE','LOC:LONGITUDE','Pressure:CTD [dbar]', 'depth', 'LOC:STATION']).mean()
-
-#%% Interpolate Line P data
-
-# # x_new = aug_C_chl.loc[8].reset_index().set_index(['latbins','lonbins']).sort_index().iloc[inds].index.get_level_values('lonbins').values
-# x_new = aug_C_chl.loc[8].iloc[inds].index.get_level_values('lonbins').values
-
-# #------------------------------------------------------------------------------
-# #### SSN
-
-# SSN_round = SSN.reset_index().copy()
-# SSN_round['lon'] = SSN_round['lon'].round(2)
-# SSN_round['lat'] = SSN_round['lat'].round(2)
-# SSN_round = SSN_round.set_index(['station','lon','lat'])#.drop('index', axis=1)
-
-# f = scipy.interpolate.interp1d(SSN_round.index.get_level_values('lon').values, SSN_round.values[:,0])
-
-# SSN_interp = f(x_new)
-
-# # SSN_interp = pd.Series(SSN_interp, index=X_anom['SST'].loc[[8]].reset_index().set_index(['datetime','latbins','lonbins']).sort_index().iloc[inds].index)
-# SSN_interp = pd.Series(SSN_interp, index=X_anom['SST'].loc[[8]].iloc[inds].index)
-# #------------------------------------------------------------------------------
-# #### Si
-
-# Si_ctd_round = Si_ctd.reset_index().copy()
-# Si_ctd_round['lon'] = Si_ctd_round['lon'].round(2)
-# Si_ctd_round['lat'] = Si_ctd_round['lat'].round(2)
-# Si_ctd_round = Si_ctd_round.set_index(['station','lon','lat'])#.drop('index', axis=1)
-
-# f = scipy.interpolate.interp1d(Si_ctd_round.index.get_level_values('lon').values, Si_ctd_round.values[:,0])
-
-# Si_interp = f(x_new)
-
-# # Si_interp = pd.Series(Si_interp, index=X_anom['SST'].loc[[8]].reset_index().set_index(['datetime','latbins','lonbins']).sort_index().iloc[inds].index)
-# Si_interp = pd.Series(Si_interp, index=X_anom['SST'].loc[[8]].iloc[inds].index)
-# #------------------------------------------------------------------------------
-# #### Sal
-
-# sal_round = sal.reset_index().copy()
-# sal_round['lon'] = sal_round['lon'].round(2)
-# sal_round['lat'] = sal_round['lat'].round(2)
-# sal_round = sal_round.set_index(['station','lon','lat'])#.drop('index', axis=1)
-
-# f = scipy.interpolate.interp1d(sal_round.index.get_level_values('lon').values, sal_round.values[:,0])
-
-# sal_interp = f(x_new)
-
-# # sal_interp = pd.Series(sal_interp, index=X_anom['SST'].loc[[8]].reset_index().set_index(['datetime','latbins','lonbins']).sort_index().iloc[inds].index)
-# sal_interp = pd.Series(sal_interp, index=X_anom['SST'].loc[[8]].iloc[inds].index)
-# #------------------------------------------------------------------------------
-# #### MLD
-
-# MLDs_round = MLDs.reset_index().copy()
-# MLDs_round['lon'] = MLDs_round['lon'].round(2)
-# MLDs_round['lat'] = MLDs_round['lat'].round(2)
-# MLDs_round = MLDs_round.set_index(['station','lon','lat'])#.drop('index', axis=1)
-
-# f = scipy.interpolate.interp1d(MLDs_round.index.get_level_values('lon').values, MLDs_round.values[:,0])
-
-# MLD_interp = f(x_new)
-
-# # MLD_interp = pd.Series(MLD_interp, index=X_anom['SST'].loc[[8]].reset_index().set_index(['datetime','latbins','lonbins']).sort_index().iloc[inds].index)
-# MLD_interp = pd.Series(MLD_interp, index=X_anom['SST'].loc[[8]].iloc[inds].index)
 
 #%% line P - extract 8d data (chl, bbp, PAR, kd)
 
@@ -1089,8 +996,9 @@ MLD_interpd = pd.Series(MLD_interpd,
                         index=interp_index,
                         name='MLD')
 
-matched_8d_nona = pd.concat([matched_8d, MLD_interpd], axis=1)
-matched_8d_nona = matched_8d_nona.dropna()
+# matched_8d_nona = pd.concat([matched_8d, MLD_interpd.reset_index()], axis=1)
+# matched_8d_nona = matched_8d_nona.dropna()
+matched_8d_nona = matched_8d.copy().dropna()
 
 #%% Force ML models w/ aug 2022 data (8-day data)
 # get the values up to OSP
@@ -1385,3 +1293,88 @@ FvFm_sd = FRRF_data_all.loc[idx[:,'dark','Init',:], 'Fv/Fm'].groupby(['station',
 FvFm_sd= pd.concat([DMS_rate_stns,FvFm_sd], axis=1)
 FvFm_sd = FvFm_sd.reset_index().set_index(['station','lon','lat'])
 
+#%% Statistics
+
+stations = [
+    'P1',
+    'P2',
+    'P3',
+    'P4',
+    'P5',
+    'P6',
+    'P7',
+    'P8',
+    'P9',
+    'P10',
+    'P11',
+    'P12',
+    'P14',
+    'P15',
+    'P16',
+    'P17',
+    'P18',
+    'P19',
+    'P20',
+    'P21',
+    'P22',
+    'P23',
+    'P24',
+    'P25',
+    'P35',
+    'P26',
+]
+
+# need to calculate DMS:chl ratios first (used later in plotting)
+MHW_chl_matched = MHW_matched.loc[matched_8d_nona['datetime']].copy()
+MHW_chl_matched['DMS:chl'] = pd.Series(MHW_chl_matched['DMS'].values / matched_8d_nona['chl'].values, index=MHW_chl_matched.index)
+
+#------------------------------------------------------------------------------
+#### Compute U-test for DMS and DMS:chl in ambient and MHW waters
+
+# levenes test used to test equal variances - failed
+scipy.stats.levene(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS'],
+                   MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS'])
+
+# equal varainces assumption failed, use non-parameteric t-test
+scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS'],
+                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS'])
+
+scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_matched['MHW']==0).dropna()['DMS:chl'],
+                         MHW_chl_matched.mask(MHW_chl_matched['MHW']==1).dropna()['DMS:chl'])
+
+#------------------------------------------------------------------------------
+#### Compute correlations between DMS and MLD anomalies
+
+# get values matching up with DMS data (practically excludes some early line stations in haro strait)
+MLD_anom_inds = []
+# DMS_MLD_vals = []
+for i,j in zip(MLD_anom.loc[stations].index.get_level_values('lon'), MLD_anom.loc[stations].index.get_level_values('lat')):
+    if ~np.isnan(i) and ~np.isnan(j):
+        ind = np.nanargmin((np.abs(uw_DMS.iloc[:210,:].loc[:,'lat'] - j)+np.abs(uw_DMS.iloc[:210,:].loc[:,'lon'] - i)))
+        MLD_anom_inds.append(ind)
+        # DMS_MLD_vals.append(np.nanmean(uw_DMS.loc[ind-3:ind+3, 'conc']))
+
+# compute correlations
+print('\nMLD ~ DMS; r =', pearsonr(MLD_anom.loc[stations], uw_DMS.loc[MLD_anom_inds, 'conc']))
+print('MLD ~ DMS; rho =', spearmanr(MLD_anom.loc[stations], uw_DMS.loc[MLD_anom_inds, 'conc']))
+
+#------------------------------------------------------------------------------
+#### Compute correlation between SST and SSN anomalies
+
+# using the in situ, rather than satellite-based, SST anomalies here
+print('\nSSTA ~ SSNA; r =', pearsonr(temp_depth_anom.loc[0:10].groupby('lon').mean().loc[SSTA_depth_lons.loc[stations].values[:,0]].values,
+                                   SSN_anom.loc[idx[stations,:]].values))
+
+#------------------------------------------------------------------------------
+#### Compute the correlations between SST anomalies and surface water haptophye abundance
+
+print('\nSSTA ~ haptos; r =', pearsonr(temp_depth_anom.loc[0:10].groupby('lon').mean().loc[SSTA_depth_lons.loc[stations].values[:,0]],
+                                    taxa_per.loc[stations,'Haptophytes']))
+
+#%% Calculate analysis run time
+analysis_end = timeit.default_timer()
+analysis_runtime = analysis_end-analysis_start
+print('Analysis Runtime:')
+print(str(round(analysis_runtime,5)),'secs')
+print(str(round((analysis_runtime)/60,5)),'mins')
+print(str(round((analysis_runtime)/3600,5)),'hrs')

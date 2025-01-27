@@ -13,6 +13,7 @@ import pandas as pd
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import cartopy
 import cartopy.crs as ccrs
+from cartopy.mpl.geoaxes import GeoAxes
 from mpl_toolkits.axes_grid1.inset_locator import InsetPosition, inset_axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import cmocean
@@ -174,7 +175,7 @@ ax.set_ylim(0,68)
 axins = inset_axes(ax, width="40%", height="40%", loc="upper center", 
                     bbox_to_anchor=(0.25,0.5,1,0.5),
                     bbox_transform=ax.transAxes,
-                axes_class=cartopy.mpl.geoaxes.GeoAxes, 
+                axes_class=GeoAxes, 
                 axes_kwargs=dict(projection=ccrs.PlateCarree())
                 )
 
@@ -299,7 +300,7 @@ ax2.set_ylim(0,68)
 axins = inset_axes(ax2, width="40%", height="40%", loc="upper center", 
                     bbox_to_anchor=(0.25,0.5,1,0.5),
                     bbox_transform=ax2.transAxes,
-                    axes_class=cartopy.mpl.geoaxes.GeoAxes, 
+                    axes_class=GeoAxes, 
                     axes_kwargs=dict(projection=ccrs.PlateCarree())
                     )
 
@@ -319,8 +320,8 @@ fig.savefig(fig_dir+'Fig_1.tif', bbox_inches='tight', pil_kwargs={"compression":
 
 #%% FIG 2: map SSTA, DMS boxplots and 5-d averaged SSTA vs DMS:chl
 
-MHW_chl_matched = MHW_matched.loc[matched_8d_nona['datetime']].copy()
-MHW_chl_matched['DMS:chl'] = pd.Series(MHW_chl_matched['DMS'].values / matched_8d_nona['chl'].values, index=MHW_chl_matched.index)
+# MHW_chl_matched = MHW_matched.loc[matched_8d_nona['datetime']].copy()
+# MHW_chl_matched['DMS:chl'] = pd.Series(MHW_chl_matched['DMS'].values / matched_8d_nona['chl'].values, index=MHW_chl_matched.index)
 
 fig = plt.figure(figsize=(24,12), dpi=300)
 gs = fig.add_gridspec(2, 2)
@@ -335,7 +336,7 @@ ds = [str(i).zfill(2) for i in np.arange(10,24+1,1)]
 SSTA_plot = SST_anom_stack.loc[ds].stack().groupby(['lat','lon']).mean().unstack('lon')
 SSTA_plot = SSTA_plot.loc[sst_mean.index, sst_mean.columns]
 
-# diff = ((1.28*sst_std) + sst_mean)
+# for visualizing heatwave bounds: calculate ~90th percentile from SD and z-scores
 diff = (1.28*sst_std)
 cat1_mask = SSTA_plot[((SSTA_plot >= diff) & (SSTA_plot < 2*diff))]
 cat2_mask = SSTA_plot[((SSTA_plot >= 2*diff) & (SSTA_plot < 3*diff))]
@@ -383,7 +384,7 @@ gl.top_labels = False
 gl.right_labels = False
 ax.add_feature(cartopy.feature.LAND, edgecolor='None', facecolor='darkgray', zorder=2)
 ax.add_feature(cartopy.feature.COASTLINE, edgecolor='k', zorder=2)
-ax.set_extent([-146, -123, 48, 52])
+ax.set_extent([-146, -123, 48.25, 52])
 
 ax_cb = fig.add_axes([0.1, 0.88, 0.6, 0.02])
 fig.add_axes(ax_cb)
@@ -997,12 +998,10 @@ xlims = (-145.3, -124.5)
 ax.set_xlim(xlims)
 ax2.set_xlim(xlims)
 ax_2.set_xlim(xlims)
-ax3.set_xlim(xlims)
 
 xtick_lons = np.arange(-125,-145-5, -5)
 ax.set_xticks(xtick_lons)
 ax2.set_xticks(xtick_lons)
-ax3.set_xticks(xtick_lons)
 
 ax.set_xticklabels([])
 
@@ -1453,7 +1452,7 @@ fig = plt.figure(figsize=(12,12), dpi=300)
 ax2 = fig.add_subplot(211)
 ax3 = fig.add_subplot(212)
 
-ax2.plot(DMS_wind_ship_anom.iloc[:P26_wind_ind,:].index.get_level_values('lonbins'),
+ax2.plot(DMS_wind_ship_anom.iloc[:P26_wind_ind,:].index.get_level_values('lons'),
         DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['DMS'],
         color='k',
         ls='--',
@@ -1471,7 +1470,7 @@ ax2.text(0.01,0.9, 'a', color='k', fontweight='bold', fontsize=24,
 k = 2.1*DMS_wind_ship_anom['wind']-2.8
 DMS_wind_ship_anom['F_DMS'] = k*DMS_wind_ship_anom['DMS']*0.24
 
-ax3.plot(DMS_wind_ship_anom.iloc[:P26_wind_ind,:].index.get_level_values('lonbins'),
+ax3.plot(DMS_wind_ship_anom.iloc[:P26_wind_ind,:].index.get_level_values('lons'),
         DMS_wind_ship_anom.iloc[:P26_wind_ind,:]['F_DMS'],
         color='k',
         ls='--',
