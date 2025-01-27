@@ -17,4 +17,15 @@ Other required code are provided in the following scripts:
 - <ins>bin1d.py</ins>: function that takes either 1-D or 2-D data and bins it along the column axis. Dependencies include numpy and pandas.
 
 
+| First Header  | Second Header |
+| ------------- | ------------- |
+| process_uw_DMS_2022.py  | script to extract underway DMS and DMSP concentrations from integrated CIMS peaks.   |
+| turnover_rates.py  | provides a wrapper function that iteratively runs linear regression on time-course, isotopically-labelled DMS/O/P concentrations obtained from the incubations described in text.  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
 
