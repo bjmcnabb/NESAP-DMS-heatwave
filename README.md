@@ -9,7 +9,7 @@ _Main_: The main scripts used are the following:
 
 <br />
 
-_Ancillary_: Code providing functions or abstracting analysis steps in the main scripts are provided in the following:
+_Ancillary_: Code providing a) functions or b) abstracting analysis steps for the main scripts are provided in the following:
 | Script  | Description |
 | ------------- | ------------- |
 | process_uw_DMS_2022.py  | script used to extract underway DMS and DMSP concentrations from integrated CIMS peaks. |
