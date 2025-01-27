@@ -1,7 +1,7 @@
 # NESAP-DMS-heatwave
 Code accompanying the manuscript "Exceptionally high dimethyl sulfide concentrations during a marine heatwave in the NE subarctic Pacific" (McNabb *et al.* 2025, *in prep.*). These scripts provide post-processing and analysis of DMS/O/P cycling & concentrations, and other ancillary data, collected along Line P during a marine heatwave in August 2022.
 
-The main scripts used are the following:
+**Main**: The main scripts used are the following:
 | Script  | Description |
 | ------------- | ------------- |
 | DMS_heatwave_analysis.py | loads the relevant datasets and runs data analysis, including model runs and statistics. |
@@ -9,7 +9,7 @@ The main scripts used are the following:
 
 <br />
 
-Code providing functions or abstracting analysis steps in the main scripts are provided in the following:
+**Ancillary**: Code providing functions or abstracting analysis steps in the main scripts are provided in the following:
 | Script  | Description |
 | ------------- | ------------- |
 | process_uw_DMS_2022.py  | script used to extract underway DMS and DMSP concentrations from integrated CIMS peaks. |
