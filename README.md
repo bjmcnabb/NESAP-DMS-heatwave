@@ -12,7 +12,7 @@ The main scripts used are the following:
 Other required code are provided in the following scripts:
 | Script  | Description |
 | ------------- | ------------- |
-| process_uw_DMS_2022.py  | script to extract underway DMS and DMSP concentrations from integrated CIMS peaks.   |
+| process_uw_DMS_2022.py  | script used to extract underway DMS and DMSP concentrations from integrated CIMS peaks. |
 | turnover_rates.py  | provides a wrapper function that iteratively runs linear regression on time-course, isotopically-labelled DMS/O/P concentrations obtained from the incubations described in text.  |
 | NESAP_build_models.py | streamlined code reproduced from https://github.com/bjmcnabb/DMS_Climatology/tree/main/NESAP, which builds the RFR and ANN models as described in [McNabb & Tortell (2022)](https://bg.copernicus.org/articles/19/1705/2022/). |
 | FRRF_data_extraction.py | provides an iterative function to extract user-selected physiological parameters obtained from the curve-fitting outputs of the LIFT software. |
