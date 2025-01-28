@@ -20,7 +20,7 @@ from scipy.stats import pearsonr, spearmanr
 import gsw
 
 # load custom functions
-from FRRF_data_extraction import FRRF_extract
+from LineP_FRRF_data_extraction import FRRF_extract
 from turnover_rates import get_rates
 from extract_profile_data_2007_2022 import extract_profile
 from VGPM_NPP_toolbox import LatToDayLength, calculate_NPP
