@@ -866,7 +866,7 @@ ax4.set_xlim(-145.6, -124.99917)
 ax5.set_xlim(-145.6, -124.99917)
 ax5_b.set_xlim(-145.6, -124.99917)
 
-fig.savefig(fig_dir+'Fig_4.tif', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
+fig.savefig(fig_dir+'Fig_3.tif', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
 
 #%% FIG 4: Plot along transect wind speed & MLD
 
@@ -1008,7 +1008,7 @@ ax2.set_xticks(xtick_lons)
 
 ax.set_xticklabels([])
 
-fig.savefig(fig_dir+'Fig_3.tif', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
+fig.savefig(fig_dir+'Fig_4.tif', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
 
 #%% ED FIG 1: subpolar gyre SST anomaly (Aug 10-24, 2022)
 
