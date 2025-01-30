@@ -236,21 +236,10 @@ uw.loc[263:264,'sample'] = 0
 # extract variables
 uw_DMS = uw[uw['sample']==0]
 uw_DMSP = uw[uw['sample']==2]
-
-# calculate DMS:DMSP ratio
-uw_DMS = uw_DMS.set_index('time')
-uw_DMSP = uw_DMSP.set_index('time')
-
-S_ratio = uw_DMS['conc']/uw_DMSP.reindex_like(uw_DMS)['conc']
-S_ratio = S_ratio.to_frame()
-S_ratio.insert(loc=0, column='lat', value=uw_DMS['lat'])
-S_ratio.insert(loc=0, column='lon', value=uw_DMS['lon'])
-
 uw_DMS.reset_index(inplace=True)
 uw_DMSP.reset_index(inplace=True)
-S_ratio.reset_index(inplace=True)
 
-# Correct for some erroneous points 
+#### Correct for some erroneous points 
 
 # remove values below detection limit
 uw_DMS = uw_DMS.where(uw_DMS['conc']>0, np.nan) 

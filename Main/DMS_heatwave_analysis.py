@@ -1352,7 +1352,7 @@ print('U-test DMS:chl =', scipy.stats.mannwhitneyu(MHW_chl_matched.mask(MHW_chl_
 MLD_anom_inds = []
 for i,j in zip(MLD_anom.loc[stations[1:]].index.get_level_values('lon'), MLD_anom.loc[stations[1:]].index.get_level_values('lat')):
     if ~np.isnan(i) and ~np.isnan(j):
-        ind = np.nanargmin((np.abs(uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lat'] - j)+np.abs(uw_DMS.iloc[:DMS_OSP_loc,:].loc[:,'lon'] - i)))
+        ind = np.nanargmin((np.abs(uw_DMS.loc[:DMS_OSP_loc,:].loc[:,'lat'] - j)+np.abs(uw_DMS.loc[:DMS_OSP_loc,:].loc[:,'lon'] - i)))
         MLD_anom_inds.append(ind)
 
 # compute correlations

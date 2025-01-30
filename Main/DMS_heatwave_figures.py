@@ -531,6 +531,7 @@ ax3.text(0.03,0.9, 'b', color='k', fontweight='bold', fontsize=24,
 fig.subplots_adjust(wspace=0.4)
 
 fig.savefig(fig_dir+'Fig_2.tif', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
+fig.savefig(fig_dir+'Fig_2.png', bbox_inches='tight', pil_kwargs={"compression": "tiff_lzw"})
 
 #%% FIG 3: plot along transect SSN anomalies, Fv/Fm, and DMS/O/P turnover rates
 
@@ -1029,8 +1030,8 @@ h = ax.pcolormesh(
     transform=ccrs.PlateCarree())
 
 h2 = ax.scatter(
-    uw_DMS_ind.iloc[:199].loc[:,'lon'],
-    uw_DMS_ind.iloc[:199].loc[:,'lat'],
+    uw_DMS_ind.loc[:DMS_OSP_loc].loc[:,'lon'],
+    uw_DMS_ind.loc[:DMS_OSP_loc].loc[:,'lat'],
     s=5,
     vmin=0,
     vmax=30,
@@ -1447,8 +1448,8 @@ fig.savefig(fig_dir+'Fig_S4.tif', bbox_inches='tight', pil_kwargs={"compression"
 
 #%% ED FIG 5: Transect plots of DMS concentrations and sea-air flux
 
-# P26_wind_ind = 209
-P26_wind_ind= 199
+P26_wind_ind = 209
+# P26_wind_ind= 199
 
 fig = plt.figure(figsize=(12,12), dpi=300)
 ax2 = fig.add_subplot(211)
